@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'gtk2'
 
 # A wrapper for notifiers in various plataforms.
 #
@@ -100,8 +99,7 @@ class NotifierWrapper
     end
 
     def notify_with_libnotify(title, message, options)
-      icon = options.has_key?(:icon) ? Gdk::Pixbuf.new(options[:icon]) : nil
-      @notification = Notify::Notification.new(title, message, icon, options[:widget])
+      @notification = Notify::Notification.new(title, message, options[:icon], options[:widget])
       @notification.timeout = options[:timeout] * 1000 if options.has_key?(:timeout)
       @notification.urgency = options[:urgency] if options.has_key?(:urgency)
       @notification.category = options[:category] if options.has_key?(:category)
