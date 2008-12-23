@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'gtk2'
 
 # A wrapper for notifiers in various plataforms.
 #
@@ -47,7 +46,8 @@ class NotifierWrapper
   # - *urgency*: The urgency level
   # - *category*: The category of the notification
   def notify(title, message = nil, options = {})
-    send("notify_with_#{@notifier_name}", title, message, options)
+    options.each { |key, value| options[key] = convert(value) }
+    send("notify_with_#{@notifier_name}", convert(title), convert(message), options)
   end
 
   private
@@ -100,8 +100,7 @@ class NotifierWrapper
     end
 
     def notify_with_libnotify(title, message, options)
-      icon = options.has_key?(:icon) ? Gdk::Pixbuf.new(options[:icon]) : nil
-      @notification = Notify::Notification.new(title, message, icon, options[:widget])
+      @notification = Notify::Notification.new(title, message, options[:icon], options[:widget])
       @notification.timeout = options[:timeout] * 1000 if options.has_key?(:timeout)
       @notification.urgency = options[:urgency] if options.has_key?(:urgency)
       @notification.category = options[:category] if options.has_key?(:category)
@@ -113,6 +112,22 @@ class NotifierWrapper
     end
 
     def notify_with_growl(title, message, options)
-      @notifier.notify(options[:category], title, message, options[:urgency], options[:timeout].nil?)
+      @notifier.notify(options[:category].to_s, title, message, options[:urgency], options[:timeout].nil?)
+    end
+    
+    # This method is needed since values passed to notifiers come from
+    # observable properties, and some notifiers have trouble casting them to
+    # proper values. :(
+    def convert(value)
+      unless value.nil?
+        if value.is_a?(String)
+          value = value.to_s
+        elsif value.is_a?(Fixnum)
+          value = value.to_i
+        elsif value.is_a?(Float)
+          value = value.to_f
+        end
+      end
+      value
     end
 end
