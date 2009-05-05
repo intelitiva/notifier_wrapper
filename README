@@ -8,3 +8,7 @@ in Mac OS X. The proper ruby bindings for those libraries must be installed.
 ATTENTION: It was tested only on Ubuntu using libnotify, but the code for snarl
 and Growl seems so simple that it will probably just work! :)
 
+== Contributors
+
+Vicente Mundim (vicente.mundim@gmail.com)
+Henning Jensen (henning.jensen@gmail.com)
